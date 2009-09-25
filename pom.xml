@@ -98,6 +98,12 @@
       <version>3.5.0.v20090520</version>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.eclipse.core</groupId>
+      <artifactId>contenttype</artifactId>
+      <version>3.4.0.v20090429-1800</version>
+      <scope>runtime</scope>
+    </dependency>
   </dependencies>
 
   <build>
