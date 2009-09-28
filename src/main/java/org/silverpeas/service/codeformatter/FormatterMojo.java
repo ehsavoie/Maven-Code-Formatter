@@ -26,6 +26,7 @@ package org.silverpeas.service.codeformatter;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 
@@ -33,6 +34,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 import org.eclipse.jdt.core.ToolFactory;
@@ -53,25 +55,24 @@ public class FormatterMojo extends AbstractMojo {
   /**
    * File containing the Eclipse Formatter Configuration.
    * 
-   * @parameter 
-   *            expression="${basedir}/src/main/resources/formatter/formatter.prefs"
-   * @required
+   * @parameter expression="${formatter.configurationFile}"
+   *            default-value="${basedir}/src/main/resources/formatter/formatter.prefs"
    */
-  private File configurationFile;
+  private String configurationFile;
 
   /**
    * File containing Java files.
    * 
-   * @parameter expression="${basedir}/src/main/java"
-   * @required
+   * @parameter expression="${formatter.sourceFiles}"
+   *            default-value="${basedir}/src/main/java"
    */
   private File sourceFiles;
 
   public void execute() throws MojoExecutionException {
-    Map options = readConfig(configurationFile);
+    Map options = readConfig(getConfigurationFile());
     final CodeFormatter codeFormatter = ToolFactory
         .createCodeFormatter(options);
-    formatDirTree(sourceFiles, codeFormatter);
+    formatDirTree(getSourceFiles(), codeFormatter);
   }
 
   /**
@@ -147,10 +148,10 @@ public class FormatterMojo extends AbstractMojo {
    * Return a Java Properties file representing the options that are in the
    * specified config file.
    */
-  private Properties readConfig(File configFile) {
+  private Properties readConfig(String configFile) {
     BufferedInputStream stream = null;
     try {
-      stream = new BufferedInputStream(new FileInputStream(configFile));
+      stream = new BufferedInputStream(getResource(configFile));
       final Properties formatterOptions = new Properties();
       formatterOptions.load(stream);
       return formatterOptions;
@@ -166,5 +167,44 @@ public class FormatterMojo extends AbstractMojo {
       }
     }
     return null;
+  }
+
+  protected InputStream getResource(String configFile)
+      throws FileNotFoundException {
+    File file = new File(configFile);
+    if (file.exists() && file.isFile()) {
+      return new FileInputStream(file);
+    }
+    return this.getClass().getClassLoader().getResourceAsStream(configFile);
+  }
+
+  /**
+   * @return the configurationFile
+   */
+  public String getConfigurationFile() {
+    return configurationFile;
+  }
+
+  /**
+   * @param configurationFile
+   *          the configurationFile to set
+   */
+  public void setConfigurationFile(String configurationFile) {
+    this.configurationFile = configurationFile;
+  }
+
+  /**
+   * @return the sourceFiles
+   */
+  public File getSourceFiles() {
+    return sourceFiles;
+  }
+
+  /**
+   * @param sourceFiles
+   *          the sourceFiles to set
+   */
+  public void setSourceFiles(File sourceFiles) {
+    this.sourceFiles = sourceFiles;
   }
 }
