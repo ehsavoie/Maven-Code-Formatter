@@ -7,6 +7,14 @@
   <version>1.1-SNAPSHOT</version>
   <name>Code Formatter Maven Mojo</name>
   <url>http://www.silverpeas.com</url>
+  <licenses>
+    <license>
+      <name>GNU Affero General Public License</name>
+      <comments>with FOSS Exception</comments>
+      <distribution>repo</distribution>
+      <url>https://repository.silverpeas.com/legal/licensing</url>
+    </license>
+  </licenses>
 
   <distributionManagement>
     <repository>
@@ -63,7 +71,7 @@
       <artifactId>core</artifactId>
       <version>3.5.0.v_963</version>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>org.eclipse</groupId>
       <artifactId>text</artifactId>
       <version>3.5.0.v20090513-2000</version>
@@ -129,27 +137,34 @@
         <artifactId>maven-license-plugin</artifactId>
         <version>1.4.0</version>
         <configuration>
-          <header>license/silverpeas-license.txt</header>
+          <header>${basedir}/src/main/resources/header/silverpeas-license.txt</header>
         </configuration>
         <executions>
           <execution>
             <id>header</id>
-            <phase>generate-sources</phase>
+            <phase>process-sources</phase>
             <goals>
               <goal>format</goal>
             </goals>
           </execution>
         </executions>
-        <dependencies>
-          <dependency>
-            <groupId>com.silverpeas</groupId>
-            <artifactId>assembly-configuration</artifactId>
-            <version>1.0-SNAPSHOT</version>
-          </dependency>
-        </dependencies>
       </plugin>
     </plugins>
   </build>
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>2.5</version>
+        <configuration>
+          <requirements>
+            <jdk>${project.build.java.target}</jdk>
+          </requirements>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
 
 
