@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+  <properties>
+    <author>Emmanuel Hugonnet</author>
+    <title>Introduction</title>
+  </properties>
+  <head>    
+  </head>
+  <body>
+    <!-- The body of the document contains a number of sections -->
+    <section name="Code Formatter plugin">
+      <!-- Within sections, any XHTML can be used -->
+      <p>This plugin uses the Eclipse's Java formatter to format source code according to a specified configuration.</p>
+           
+      <!-- in addition to XHTML, any number of subsections can be within a section -->
+      <subsection name="Goals Overview">
+        <p>
+          General Information about the goals.
+          <ul>
+            <li>
+              <a href="plugin-info.html">code-formatter:format</a>: Goal which produces a changelog report based on the Subversion logs.
+            </li>
+          </ul>
+        </p>
+      </subsection>     
+    </section>
+  </body>
+</document>
