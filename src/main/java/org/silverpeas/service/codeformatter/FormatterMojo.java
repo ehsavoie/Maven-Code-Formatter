@@ -1,50 +1,3 @@
-/**
- * ====
- *     Copyright (C) 2000 - 2009 Silverpeas
- *
- *     This program is free software: you can redistribute it and/or modify
- *     it under the terms of the GNU Affero General Public License as
- *     published by the Free Software Foundation, either version 3 of the
- *     License, or (at your option) any later version.
- *
- *     As a special exception to the terms and conditions of version 3.0 of
- *     the GPL, you may redistribute this Program in connection with Free/Libre
- *     and Open Source Software ("FLOSS") applications as described in Alfresco's
- *     FLOSS exception.  You should have recieved a copy of the text describing
- *     the FLOSS exception, and it is also available here:
- *     "http://repository.silverpeas.com/legal/licensing"
- *
- *     This program is distributed in the hope that it will be useful,
- *     but WITHOUT ANY WARRANTY; without even the implied warranty of
- *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *     GNU Affero General Public License for more details.
- *
- *     You should have received a copy of the GNU Affero General Public License
- *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * ====
- * Copyright (C) 2000 - 2009 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package org.silverpeas.service.codeformatter;
 
 import java.io.BufferedInputStream;
@@ -55,9 +8,11 @@ import org.apache.maven.plugin.MojoExecutionException;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.util.Map;
 import java.util.Properties;
 import org.eclipse.jdt.core.ToolFactory;
@@ -74,7 +29,6 @@ import org.eclipse.text.edits.TextEdit;
  * @phase process-sources
  */
 public class FormatterMojo extends AbstractMojo {
-
   /**
    * File containing the Eclipse Formatter Configuration.
    * 
@@ -82,7 +36,6 @@ public class FormatterMojo extends AbstractMojo {
    *            default-value="${basedir}/src/main/resources/formatter/formatter.prefs"
    */
   private String configurationFile;
-
   /**
    * File containing Java files.
    * 
@@ -90,6 +43,13 @@ public class FormatterMojo extends AbstractMojo {
    *            default-value="${basedir}/src/main/java"
    */
   private File sourceFiles;
+  /**
+   * File containing Java files.
+   * 
+   * @parameter expression="${formatter.sourceEncoding}"
+   *            default-value="${project.build.sourceEncoding}"
+   */
+  private String sourceEncoding;
 
   public void execute() throws MojoExecutionException {
     Map options = readConfig(getConfigurationFile());
@@ -133,10 +93,13 @@ public class FormatterMojo extends AbstractMojo {
     IDocument doc = new Document();
     try {
       // read the file
-      getLog().debug("Formatting file " + file.getAbsolutePath());
+      getLog().debug(
+          "Formatting file " + file.getAbsolutePath() + " in encoding "
+              + sourceEncoding);
       String contents = new String(org.eclipse.jdt.internal.compiler.util.Util
-          .getFileCharContent(file, null));
+          .getFileCharContent(file, sourceEncoding));
       // format the file (the meat and potatoes)
+      getLog().debug("Formatting this " + contents);
       doc.set(contents);
       TextEdit edit = codeFormatter.format(CodeFormatter.K_COMPILATION_UNIT
           | CodeFormatter.F_INCLUDE_COMMENTS, contents, 0, contents.length(),
@@ -149,7 +112,8 @@ public class FormatterMojo extends AbstractMojo {
       }
 
       // write the file
-      final BufferedWriter out = new BufferedWriter(new FileWriter(file));
+      final BufferedWriter out = new BufferedWriter(new OutputStreamWriter(
+          new FileOutputStream(file), sourceEncoding));
       try {
         out.write(doc.get());
         out.flush();

@@ -17,6 +17,8 @@
 
   <properties>
     <config.version>1.0-SNAPSHOT</config.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>
 
   <distributionManagement>
@@ -125,6 +127,7 @@
       <plugin>
         <artifactId>${project.artifactId}</artifactId>
         <groupId>${project.groupId}</groupId>
+        <version>${project.version}</version>
         <configuration>
           <configurationFile>src/main/resources/formatter/formatter.prefs</configurationFile>
         </configuration>
@@ -276,8 +279,6 @@
       </build>
     </profile>
   </profiles>
-
-
 </project>
 
 
